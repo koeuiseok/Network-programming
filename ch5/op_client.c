@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -50,7 +49,7 @@ int main(int argc, char* argv[])
 		error_handling("connect errror");
 	}
 	else{
-		printf("connected\n");
+		printf("connected.....\n");
 	}
 	
 	fputs("Operand count : ",stdout);
@@ -66,24 +65,23 @@ int main(int argc, char* argv[])
 	}
 	
 	fgetc(stdin);
-	fprintf(stdout,"Operator\n");
+	fprintf(stdout,"Operator : ");
 	scanf("%c", &opmsg[opnd_cnt*OPSZ+1]);
 	msgLen = opnd_cnt*OPSZ+2;
 	
-	if(msgLen != writen(sock, opmsg, msgLen))
+	if(msgLen != writen(sock, opmsg, msgLen))  
+	//출력 버퍼에 남아있는 공간이 메시지 렝스보다 작은 경우에 반환 되기 때문에 writen 씀
 	{
 		error_handling("writen() error");
 	}
 	
 	if(readn(sock, &result, RLT_SIZE)<0){
-		error_handling("readn() error");
+		error_handling("readn() error!");  
 	}
 	
 	result = ntohl(result);
 	printf("Operation result : %d\n", result);
-	
 	close(sock);
-	
 	return 0;
 }
 

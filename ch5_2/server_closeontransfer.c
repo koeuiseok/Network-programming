@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include "readnwrite.h"
 
 void error_handling(char* msg)
 {
@@ -18,8 +19,8 @@ int main(int argc, char* argv[])
 {
 	int serv_sock;
 	int clnt_sock;
-	char message[BUF_SIZE+1];
-	int str_len, cnt_i;
+	char buf[BUF_SIZE+1];
+	int n;
 	
 	struct sockaddr_in serv_addr;
 	struct sockaddr_in clnt_addr;
@@ -48,25 +49,29 @@ int main(int argc, char* argv[])
 	{
 		error_handling("listen() error");
 	}
-	printf("waiting....\n");
-	for(cnt_i=0; cnt_i < 5; cnt_i ++)
-	{
+	
+	while(1){
 		clnt_addr_size = sizeof(clnt_addr);
-		clnt_sock = accept(serv_sock, (struct sockaddr*)&clnt_addr, &clnt_addr_size);
-		if(clnt_sock == -1)
-		{
+		clnt_sock = accept(serv_sock,(struct sockaddr*)&clnt_addr ,&clnt_addr_size);
+		if(clnt_sock == -1){
 			error_handling("accept() error");
 		}
-		else{
-			printf("connected client %d\n", cnt_i+1);
-		}
-		printf("message from client :");
-		while((str_len = read(clnt_sock, message, BUF_SIZE)) !=0)
+		printf("\n [TCP Server] Client connected IP = %s, port = %d\n", inet_ntoa(clnt_addr.sin_addr), ntohs(clnt_addr.sin_port));
+		while(1)
 		{
-			printf("%s", message);
-			write(clnt_sock, message, str_len);
+			n = readn(clnt_sock, buf, BUF_SIZE);
+			if(n==-1){
+				error_handling("read() error");
+				break;
+			}
+			else if(n==0){   //receiving EOF
+				break;
+			}
+			buf[n] = '\0';
+			printf("[TCP/%s:%d] = %s \n ", inet_ntoa(clnt_addr.sin_addr), ntohs(clnt_addr.sin_port),buf);
 		}
-		close(clnt_sock);
+		close(clnt_sock); 
+		printf("[TCP server] Client closed IP = %s, port = %d\n", inet_ntoa(clnt_addr.sin_addr), ntohs(clnt_addr.sin_port));
 	}
 
 	close(serv_sock);

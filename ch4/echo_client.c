@@ -46,16 +46,17 @@ int main(int argc, char* argv[])
 	}
 	
 	while(1){
-		printf("input message (0 to quit) : ");
+		printf("Input messages (write Q if you want to out) : ");
 		fgets(message, BUF_SIZE, stdin);
-		if(!strcmp(message, "q\n")||!strcmp(message, "Q\n"))
+		if(!strcmp(message, "q\n") || !strcmp(message, "Q\n"))
 		{
 			break;
 		}
 		write(sock, message, strlen(message));
-		str_len = read(sock, message, BUF_SIZE);
+		str_len =  read(sock, message, BUF_SIZE);
 		message[str_len] = '\0';
-		printf("Message from server : %s", message);
+		printf("message from server : %s", message);
+		
 	}
 	close(sock);
 	

@@ -13,7 +13,7 @@ void error_handling(char* msg)
 	exit(1);
 }
 
-#define BUF_SIZE 	128
+#define BUF_SIZE 	1024
 #define OPSZ 		4
 
 int calculate(int opnum, int opnds[], char op)
@@ -42,16 +42,12 @@ int calculate(int opnum, int opnds[], char op)
 			}
 			break;
 	}
-	return 0;
+	return result;
 }
 
 int main(int argc, char* argv[])
 {
-	int serv_sock;
-	int clnt_sock;
-	char message[BUF_SIZE+1];
-	int str_len;
-	
+	int serv_sock, clnt_sock;
 	struct sockaddr_in serv_addr;
 	struct sockaddr_in clnt_addr;
 	socklen_t clnt_addr_size;
@@ -59,7 +55,6 @@ int main(int argc, char* argv[])
 	char opinfo[BUF_SIZE];
 	int result, opnd_cnt, cnt_i;
 	int msgLen;
-	
 	
 	if(argc != 2){
 		fprintf(stderr, "Usage : %s <port>\n", argv[0]);
@@ -75,13 +70,10 @@ int main(int argc, char* argv[])
 	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	serv_addr.sin_port = htons(atoi(argv[1]));
 	
-	if(bind(serv_sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr))==-1)
-	{
+	if(bind(serv_sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr))==-1){
 		error_handling("bind() error");
 	}
-	
-	if(listen(serv_sock,5)==-1)
-	{
+	if(listen(serv_sock,5)==-1){
 		error_handling("listen() error");
 	}
 	
@@ -109,17 +101,14 @@ int main(int argc, char* argv[])
 		
 		//calculate
 		result = calculate(opnd_cnt, (int*)opinfo, opinfo[msgLen-1]);
+		printf("result for clnt %d : %d", cnt_i, result);
 		result = htonl(result);
 		
-		if(sizeof(result) != writen(clnt_sock, (char*)&result, sizeof(result)))
-		{
-			error_handling("writen() error");
+		if(sizeof(result) != writen(clnt_sock, (char*)&result, sizeof(result))){
+			error_handling("writen() error");		
 		}
-		
 		close(clnt_sock);
 	}
-
 	close(serv_sock);
-
 	return 0;
 }
