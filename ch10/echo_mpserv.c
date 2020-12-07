@@ -20,7 +20,6 @@ void read_childproc(int sig)
     int status;
     pid = waitpid(-1, &status, WNOHANG);
     printf("removed proc id : %d\n", pid);
-
 }
 
 #define BUF_SIZE 128
@@ -80,7 +79,7 @@ int main(int argc, char* argv[])
 			continue;
 		}
 		else{
-			printf("New client connected");
+			printf("New client connected\n");
 		}
 
         pid = fork();
@@ -92,9 +91,8 @@ int main(int argc, char* argv[])
     		{
 		    	write(clnt_sock, message, str_len);
 		    }
-
             close(clnt_sock);
-            puts("client disconnected..");
+            puts("client disconnected..\n");
             return 0;
         }
         else
