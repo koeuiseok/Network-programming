@@ -10,8 +10,6 @@ void timeout(int sig)
     }
 
     alarm(2);
-
-
 }
 
 void keycontrol(int sig)
