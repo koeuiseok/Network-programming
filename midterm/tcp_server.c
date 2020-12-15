@@ -77,12 +77,10 @@ int main(int argc, char* argv[])
 	file_len=lseek(fd,0,SEEK_END);
 	printf("%d byte send\n",file_len);
 	file_len = htonl(file_len);
-	
-	
 	lseek(fd,0,SEEK_SET);
 	
-	while((read_len=read(clnt_sock, &file_len, sizeof(file_len))>0){
-		if(write(clnt_sock, buf, read_len)!= read_len){
+	while((read_len=read(clnt_sock, &file_len, sizeof(file_len))>0)){
+		if(write(clnt_sock, message, read_len)!= read_len){
 			error_handling("write() error");
 		}
 	}
